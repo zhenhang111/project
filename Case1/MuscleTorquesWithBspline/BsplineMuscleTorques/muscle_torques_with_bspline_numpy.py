@@ -124,7 +124,7 @@ class MuscleTorquesWithVaryingBetaSplines(NoForces):
         )  # This caches the control points. Note that first and last control points are zero.      这将缓存控制点 首尾为0
         self.points_cached[0, :] = np.linspace(
             0, self.base_length, self.number_of_control_points + 2
-        )  # position of control points along the rod.
+        )  # position of control points along the rod.                  #位置信息
 
         # Max rate of change of activation determines, maximum change in activation
         # signal in one time-step.
