@@ -127,27 +127,28 @@ class MuscleTorquesWithVaryingBetaSplines(NoForces):
         )  # position of control points along the rod.                  #位置信息
 
         # Max rate of change of activation determines, maximum change in activation
-        # signal in one time-step.
+        # signal in one time-step.          在一个步长内的最大变化激活率
         self.max_rate_of_change_of_activation = max_rate_of_change_of_activation
 
         # Purpose of this flag is to just generate spline even the control points are zero
-        # so that code wont crash.
+        # so that code wont crash.    flag用来生成样条，即使控制点为0个，为了防止系统崩溃
         self.initial_call_flag = 0
 
     def apply_torques(self, system, time: np.float = 0.0):
 
-        # Check if RL algorithm changed the points we fit the spline at this time step
-        # if points_array changed create a new spline. Using this approach we don't create a
-        # spline every time step.
-        # Make sure that first and last point y values are zero. Because we cannot generate a
+        # Check if RL algorithm changed the points we fit the spline at this time step          检查强化学习算法是否改变了拟合样条曲线的点
+        # if points_array changed create a new spline. Using this approach we don't create a    如果改变了那就生成一个新的样条，当没有变化
+        # spline every time step.                                                               的时候就不创建，因此不必每一步都创建一个
+        # Make sure that first and last point y values are zero. Because we cannot generate a   要保证首尾为0，因为不能在首尾施加力矩
         # torque at first and last nodes.
         if (
-            not np.array_equal(self.points_cached[1, 1:-1], self.points_array(time))
+            not np.array_equal(self.points_cached[1, 1:-1], self.points_array(time))            #进行判断 状态不相等或者flag为0
             or self.initial_call_flag == 0
         ):
-            self.initial_call_flag = 1
+            self.initial_call_flag = 1                                                          #flage置1
 
             # Apply filter to the activation signal, to prevent drastic changes in activation signal.
+            #对激活信号进行滤波，防止激活信号发生剧烈变化。
             self.filter_activation(
                 self.points_cached[1, 1:-1],
                 np.array(self.points_array(time)),
@@ -156,16 +157,18 @@ class MuscleTorquesWithVaryingBetaSplines(NoForces):
 
             # self.points_cached[1, 1:-1] = self.points_array(time)
             self.my_spline = make_interp_spline(
-                self.points_cached[0], self.points_cached[1]
+                self.points_cached[0], self.points_cached[1]                                #绘制样条曲线
             )
-            # Compute the muscle torque magnitude from the beta spline.
-            self.torque_magnitude_cache = self.muscle_torque_scale * self.my_spline(
+            # Compute the muscle torque magnitude from the beta spline.                     从样条计算肌肉扭矩大小。
+            self.torque_magnitude_cache = self.muscle_torque_scale * self.my_spline(        #存储力的一个数组，比例因子乘以样条
                 np.cumsum(system.lengths)
             )
 
-        system.external_torques[self.direction, :] += self.torque_magnitude_cache[:]
+        system.external_torques[self.direction, :] += self.torque_magnitude_cache[:]        #外力的集合
 
-        if self.counter % self.step_skip == 0:
+        #TODO: 打印points_cached，points_array，direction，external_torques
+
+        if self.counter % self.step_skip == 0:                                              #每个对象用counter 对象中的步骤用step_skip
             if self.torque_profile_recorder is not None:
                 self.torque_profile_recorder["time"].append(time)
 
@@ -180,8 +183,9 @@ class MuscleTorquesWithVaryingBetaSplines(NoForces):
                 )
 
         self.counter += 1
+        #todo 打印torque_profile_recorder
 
-    @staticmethod
+    @staticmethod               #静态方法，用来滤波的
     def filter_activation(signal, input_signal, max_signal_rate_of_change):
         """
         Filters the input signal. If change in new signal (input signal) greater than
