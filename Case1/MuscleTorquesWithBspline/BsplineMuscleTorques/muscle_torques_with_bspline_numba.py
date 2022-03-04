@@ -122,7 +122,6 @@ class MuscleTorquesWithVaryingBetaSplines(NoForces):
         # Purpose of this flag is to just generate spline even the control points are zero
         # so that code wont crash.
         self.initial_call_flag = 0
-
     def apply_torques(self, system, time: np.float = 0.0):
 
         # Check if RL algorithm changed the points we fit the spline at this time step
@@ -180,14 +179,14 @@ class MuscleTorquesWithVaryingBetaSplines(NoForces):
     def compute_muscle_torques(torque_magnitude, direction, external_torques):
         """
         This Numba function updates external torques, it is used here because it updates faster than numpy version.
-
+    这里使用numba更新力矩，更快
         Parameters
         ----------
         torque_magnitude : numpy.ndarray
             1D (n_elem,) array containing data with 'float' type.
-            Computed muscle torque values.
+            Computed muscle torque values.                          计算肌肉扭矩值。
         direction : int
-            Determines which component of torque vector updated.
+            Determines which component of torque vector updated.    确定扭矩矢量的哪个分量被更新
         external_torques : numpy.ndarray
             2D (3, n_elem) array containing data with 'float' type.
 
@@ -202,7 +201,7 @@ class MuscleTorquesWithVaryingBetaSplines(NoForces):
 
     @staticmethod
     @numba.njit()
-    def filter_activation(signal, input_signal, max_signal_rate_of_change):
+    def filter_activation(signal, input_signal, max_signal_rate_of_change):         #对输入的力进行滤波
         """
         Filters the input signal. If change in new signal (input signal) greater than
         previous signal (signal) then, increase for signal is max_signal_rate_of_change amount.
