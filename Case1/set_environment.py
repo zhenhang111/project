@@ -29,7 +29,7 @@ class BaseSimulator(BaseSystemCollection, Constraints, Connections, Forcing, Cal
 
 class Environment(gym.Env):
     """
-    遵循OpenAI Gym接口的自定 义环境。此环境下，生成一个臂(cosserat杆)和靶(刚体球)。靶球是不断移动的，其移动由拥护自己定义
+    遵循OpenAI Gym接口的自定 义环境。此环境下，生成一个臂(cosserat杆)和靶(刚体球)。靶球是不断移动的，其移动由用户自己定义
     控制器必须选择控制点所在，存储在动作中并且输入到步进类方法。控制点范围为【-1，1】，用来生成β样条。β样条通过沿着软体臂计算得到的
     扭矩因子（β或者α）进行缩放。肌肉力用来弯曲或者旋转手臂去跟踪移动的目标。
 
@@ -81,44 +81,54 @@ class Environment(gym.Env):
     action : numpy.ndarray
         1D (n_torque_directions * number_of_control_points,) array containing data with 'float' type.
         一维数组，float类型。
-        Action returns control points selected by control algorithm to the Elastica simulation. n_torque_directions
-        is number of torque directions, this is controlled by the dim.
+        Action returns control points selected by control algorithm to the Elastica simulation.
+        动作将控制算法选择的控制点返回给Elastica仿真。
+        n_torque_directions is number of torque directions, this is controlled by the dim.
+        n_torque_directions是力矩方向的个数，这是由dim控制的。
+
     action_space : spaces.Box
         1D (n_torque_direction * number_of_control_poinst,) array containing data with 'float' type in range [-1., 1.].
+        gym里的action一种存储方式，为一维数组，范围为[-1,1].
     obs_state_points : int
         Number of arm (Cosserat rod) points used for state information.
+        软体臂的状态点，用于展示软体臂的状态信息   整形
     number_of_points_on_cylinder : int
         Number of cylinder points used for state information.
+        柱状物的状态点（障碍物）
     observation_space : spaces.Box
         1D ( total_number_of_states,) array containing data with 'float' type.
         State information of the systems are stored in this variable.
-    mode : int
+        观测空间：系统的状态信息存储在这个变量中。
+    mode : int                          软体臂的工作模式：四种
         There are 4 modes available.
         mode=1 fixed target position to be reached (default)
         mode=2 randomly placed fixed target position to be reached. Target position changes every reset call.
         mode=3 moving target on fixed trajectory.
         mode=4 randomly moving target.
     COLLECT_DATA_FOR_POSTPROCESSING : boolean
-        If true data from simulation is collected for post-processing. If false post-processing making videos
-        and storing data is not done.
+        If true data from simulation is collected for post-processing. If false post-processing making videos and storing data is not done.
+        是否从模拟中采集数据进行后处理。如果选择为false，制作视频和存储数据是不做的。
     E : float
-        Young's modulus of the arm (Cosserat rod).
+        Young's modulus of the arm (Cosserat rod).    杨氏模量
     NU : float
-        Dissipation constant of the arm (Cosserat rod).
+        Dissipation constant of the arm (Cosserat rod).         μ  耗散常数
     COLLECT_CONTROL_POINTS_DATA : boolean
         If true actions or selected control points by the controller are stored throughout the simulation.
+        如果为真，控制器的动作或选择的控制点在整个模拟过程中被存储。
     total_learning_steps : int
-        Total number of steps, controller is called. Also represents how many times actions changed throughout the
-        simulation.
+        Total number of steps, controller is called. Also represents how many times actions changed throughout the simulation.
+        总学习步数，也表示在整个模拟过程中动作改变的次数。
     control_point_history_array : numpy.ndarray
          2D (total_learning_steps, number_of_control_points) array containing data with 'float' type.
          Stores the actions or control points selected by the controller.
+         存储控制器选择的操作或控制点。
     shearable_rod : object
-        shearable_rod or arm is Cosserat Rod object.
+        shearable_rod or arm is Cosserat Rod object.  杆对象
     sphere : object
-        Target sphere is rigid Sphere object.
+        Target sphere is rigid Sphere object.       目标点
     spline_points_func_array_normal_dir : list
         Contains the control points for generating spline muscle torques in normal direction.
+        包含法向方向上产生肌肉力矩的控制点。
     torque_profile_list_for_muscle_in_normal_dir : defaultdict(list)
         Records, muscle torques and control points in normal direction throughout the simulation.
     spline_points_func_array_binormal_dir : list

@@ -99,7 +99,7 @@ class MuscleTorquesWithVaryingBetaSplines(NoForces):
             self.direction = int(0)
         elif direction == str("binormal"):
             self.direction = int(1)
-        elif direction == str("tangent"):    #需要确定direction是哪个方向，一共三个，法线副法线和切线方向 其中输入时候以字符串形式输入
+        elif direction == str("tangent"):           #需要确定direction是哪个方向，一共三个，法线副法线和切线方向 其中输入时候以字符串形式输入
             self.direction = int(2)
         else:
             raise NameError(
