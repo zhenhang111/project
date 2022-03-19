@@ -1049,7 +1049,7 @@ n_torque_directions：力矩方向的个数，由dim控制
                 )
 
                 np.savez(
-                    os.path.join(save_folder, "arm_activation.npz"),
+                    os.path.join(save_folder, "arm_activation.npz"),                    #力的信息
                     torque_mag=np.array(
                         self.torque_profile_list_for_muscle_in_normal_dir["torque_mag"]
                     ),
@@ -1062,4 +1062,5 @@ n_torque_directions：力矩方向的个数，由dim控制
             raise RuntimeError(
                 "call back function is not called anytime during simulation, "
                 "change COLLECT_DATA=True"
+                "回调函数没有被调用，将COLLECT_DATA设置为true"
             )
