@@ -181,7 +181,7 @@ if args.TRAIN:
     model.set_env(env)
 
 
-    model.learn(total_timesteps=int(args.total_timesteps))
+    model.learn(total_timesteps=int(args.total_timesteps))                        #学习
     # library helper
     plot_results(
         [log_dir],
@@ -195,10 +195,10 @@ if args.TRAIN:
 else:
     # Use trained policy for the simulation.
     model = TRPO.load("trpo_" + identifer)
-    obs = env.reset()
+    obs = env.reset()                                       #观察量
 
     done = False
-    score = 0
+    score = 0                                               #得分
     while not done:
         action, _states = model.predict(obs)
         obs, rewards, done, info = env.step(action)
