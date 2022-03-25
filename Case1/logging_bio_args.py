@@ -29,7 +29,7 @@ def get_valid_filename(s):
 
 def moving_average(values, window):
     """
-    Smooth values by doing a moving average
+    Smooth values by doing a moving average     增加平滑值
     :param values: (numpy array)
     :param window: (int)
     :return: (numpy array)
@@ -41,7 +41,7 @@ def moving_average(values, window):
 def plot_results(log_folder, title="Learning Curve"):
     """
     plot the results
-    :param log_folder: (str) the save location of the results to plot
+    :param log_folder: (str) the save location of the results to plot       输出结果
     :param title: (str) the title of the task to plot
     """
     x, y = ts2xy(load_results(log_folder), "timesteps")
@@ -57,9 +57,9 @@ def plot_results(log_folder, title="Learning Curve"):
     plt.close()
 
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser()              #创建语句解释器
 
-########### training and data info ###########
+########### training and data info ###########              //信息设置部分
 parser.add_argument(
     "--total_timesteps", type=float, default=1e6,
 )
@@ -76,7 +76,7 @@ parser.add_argument(
     "--algo_name", type=str, default="TRPO",
 )
 
-args = parser.parse_args()
+args = parser.parse_args()                          #取参数
 
 if args.algo_name == "TRPO":
     MLP = MlpPolicy
@@ -124,8 +124,9 @@ sim_dt = 2.0e-4
 max_rate_of_change_of_activation = np.infty
 print("rate of change", max_rate_of_change_of_activation)
 
-# If True, train. Otherwise run trained policy
+# If True, train. Otherwise run trained policy     是否选择训练好的模型
 args.TRAIN = True
+
 
 env = Environment(
     final_time=final_time,
@@ -178,6 +179,7 @@ if args.TRAIN:
 
     model = algo(env=env, verbose=1, **items)
     model.set_env(env)
+
 
     model.learn(total_timesteps=int(args.total_timesteps))
     # library helper
