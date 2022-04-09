@@ -181,7 +181,8 @@ if args.TRAIN:
     model.set_env(env)
 
 
-    model.learn(total_timesteps=int(args.total_timesteps))                        #学习
+
+    model.learn(total_timesteps=int(args.total_timesteps))                       #学习
     # library helper
     plot_results(
         [log_dir],
